@@ -1,20 +1,23 @@
 #!/bin/bash
 
-EMOJI_FILE="emojis.md"
+EMOJI_URL="https://raw.githubusercontent.com/JeyKul/remoji/master/emojis.md"
 
-if [[ ! -f "$EMOJI_FILE" ]]; then
-  echo "Error: $EMOJI_FILE not found!"
+# Fetch emoji list line from URL
+emoji_line=$(curl -s "$EMOJI_URL")
+
+if [[ -z "$emoji_line" ]]; then
+  echo "Error: Could not fetch emoji list from URL"
   exit 1
 fi
 
-# Read the first line and split it into an array
-IFS=' ' read -r -a emojis < "$EMOJI_FILE"
+# Split the line by spaces into an array
+IFS=' ' read -r -a emojis <<< "$emoji_line"
 
-# Get length of array
 count=${#emojis[@]}
+if (( count == 0 )); then
+  echo "Error: No emojis found"
+  exit 1
+fi
 
-# Pick a random index
 random_index=$((RANDOM % count))
-
-# Output the randomly selected emoji
 echo "${emojis[$random_index]}"
